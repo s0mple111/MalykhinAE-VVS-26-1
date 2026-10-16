@@ -1,0 +1,461 @@
+import random
+
+# Размер подземелья
+n = 4
+m = 4
+
+# Типы комнат
+rooms = ["Пустая", "Сундук", "Монстр", "Ловушка", "Ключ", "Портал"]
+
+# Генерация матрицы комнат с помощью list comprehension
+dungeon = [[random.choice(rooms) for j in range(m)] for i in range(n)]
+
+# Гарантируем, что в подземелье есть ключ и портал
+dungeon[0][0] = "Пустая"
+dungeon[n - 1][m - 1] = "Портал"
+dungeon[0][1] = "Ключ"
+
+# Игрок
+player = {
+    "health": 100,
+    "x": 0,
+    "y": 0
+}
+
+# Инвентарь
+inventory = []
+
+# Уже посещённые комнаты
+visited = set()
+
+
+# -----------------------------------
+# Функция отображения игрока
+# -----------------------------------
+def show_player():
+    print("\n--- ИГРОК ---")
+    print("Здоровье:", player["health"])
+    print("Координаты:", (player["x"], player["y"]))
+
+
+# -----------------------------------
+# Отображение инвентаря
+# -----------------------------------
+def show_inventory():
+    print("\n--- ИНВЕНТАРЬ ---")
+
+    if len(inventory) == 0:
+        print("Инвентарь пуст")
+    else:
+        for i, item in enumerate(inventory):
+            print(i, item["name"], "| Зачарование:", item["enchantment"])
+
+
+# -----------------------------------
+# Добавление предметов
+# -----------------------------------
+def add_item():
+    name = input("Название предмета: ")
+
+    item = {
+        "name": name,
+        "enchantment": "Отсутствует"
+    }
+
+    # append — добавление одного предмета
+    inventory.append(item)
+
+    print("Предмет добавлен!")
+
+
+def add_many_items():
+    # extend — добавление нескольких предметов
+    new_items = [
+        {"name": "Зелье", "enchantment": "Лечение"},
+        {"name": "Монета", "enchantment": "Отсутствует"}
+    ]
+
+    inventory.extend(new_items)
+
+    print("Несколько предметов добавлено!")
+
+
+# -----------------------------------
+# Удаление предметов
+# -----------------------------------
+def remove_item():
+    name = input("Название предмета для удаления: ")
+
+    # in — проверка наличия элемента
+    found = False
+
+    for item in inventory:
+        if item["name"] == name:
+            found = True
+            break
+
+    if found:
+        # remove — удаление по значению
+        inventory.remove(item)
+        print("Предмет удалён!")
+    else:
+        print("Такого предмета нет!")
+
+
+def pop_item():
+    if inventory:
+        # pop — удаление последнего элемента
+        item = inventory.pop()
+        print("Вы выбросили:", item["name"])
+    else:
+        print("Инвентарь пуст!")
+
+
+# -----------------------------------
+# Сортировка инвентаря
+# -----------------------------------
+def sort_inventory():
+    # sort — сортировка по названию
+    inventory.sort(key=lambda item: item["name"])
+
+    print("Инвентарь отсортирован!")
+
+
+def reverse_inventory():
+    # reverse — изменение порядка элементов
+    inventory.reverse()
+
+    print("Порядок предметов изменён!")
+
+
+# -----------------------------------
+# Поиск предметов
+# -----------------------------------
+def find_item():
+    name = input("Какой предмет найти? ")
+
+    names = [item["name"] for item in inventory]
+
+    # in — проверка наличия
+    if name in names:
+
+        # index — получение позиции элемента
+        position = names.index(name)
+
+        print("Предмет найден!")
+        print("Его номер в инвентаре:", position)
+
+    else:
+        print("Предмет не найден!")
+
+
+# -----------------------------------
+# Копирование и изменение списков
+# -----------------------------------
+def copy_inventory():
+    # copy — создание копии списка
+    copied_inventory = inventory.copy()
+
+    # slice — получение части списка
+    first_items = copied_inventory[:2]
+
+    print("\nКопия инвентаря:")
+    for item in copied_inventory:
+        print(item["name"])
+
+    print("Первые два предмета:")
+    for item in first_items:
+        print(item["name"])
+
+    # Изменение копии
+    copied_inventory.append({
+        "name": "Тестовый предмет",
+        "enchantment": "Магия"
+    })
+
+    print("В копию добавлен новый предмет.")
+    print("Оригинальный инвентарь не изменён.")
+
+    # -----------------------------------
+# Изменение свойств предмета
+# -----------------------------------
+def enchant_item():
+    show_inventory()
+
+    name = input("Какой предмет зачаровать? ")
+
+    for item in inventory:
+        if item["name"] == name:
+
+            enchantment = input("Введите зачарование: ")
+
+            # Изменение свойства словаря
+            item["enchantment"] = enchantment
+
+            print("Предмет успешно зачарован!")
+            return
+
+    print("Предмет не найден!")
+
+
+# -----------------------------------
+# Работа с инвентарём
+# -----------------------------------
+def inventory_menu():
+
+    while True:
+        print("\n===== ИНВЕНТАРЬ =====")
+        print("1. Посмотреть инвентарь")
+        print("2. Добавить предмет (append)")
+        print("3. Добавить несколько предметов (extend)")
+        print("4. Удалить предмет (remove)")
+        print("5. Выбросить последний предмет (pop)")
+        print("6. Сортировка (sort)")
+        print("7. Обратный порядок (reverse)")
+        print("8. Поиск предмета (index, in)")
+        print("9. Копирование и срез (copy, slice)")
+        print("10. Зачаровать предмет")
+        print("0. Вернуться в игру")
+
+        choice = input("Выберите действие: ")
+
+        if choice == "1":
+            show_inventory()
+
+        elif choice == "2":
+            add_item()
+
+        elif choice == "3":
+            add_many_items()
+
+        elif choice == "4":
+            remove_item()
+
+        elif choice == "5":
+            pop_item()
+
+        elif choice == "6":
+            sort_inventory()
+
+        elif choice == "7":
+            reverse_inventory()
+
+        elif choice == "8":
+            find_item()
+
+        elif choice == "9":
+            copy_inventory()
+
+        elif choice == "10":
+            enchant_item()
+
+        elif choice == "0":
+            break
+
+        else:
+            print("Неверная команда!")
+
+
+# -----------------------------------
+# Обработка комнат
+# -----------------------------------
+def enter_room():
+
+    x = player["x"]
+    y = player["y"]
+
+    room = dungeon[x][y]
+
+    print("\nВы вошли в комнату!")
+
+    # Не повторяем события в уже посещённых комнатах
+    if (x, y) in visited:
+        print("Вы уже посещали эту комнату.")
+        print("Тип комнаты:", room)
+        return
+
+    visited.add((x, y))
+
+    if room == "Пустая":
+        print("Комната пустая. Здесь ничего нет.")
+
+    elif room == "Сундук":
+        print("Вы нашли сундук!")
+
+        # Генерация случайного предмета
+        possible_items = ["Меч", "Щит", "Зелье", "Монета"]
+        name = random.choice(possible_items)
+
+        inventory.append({
+            "name": name,
+            "enchantment": "Отсутствует"
+        })
+
+        print("Вы получили:", name)
+
+    elif room == "Монстр":
+        print("На вас напал монстр!")
+
+        damage = random.randint(10, 30)
+        player["health"] -= damage
+
+        print("Вы потеряли", damage, "здоровья!")
+
+    elif room == "Ловушка":
+        print("Вы попали в ловушку!")
+
+        damage = random.randint(5, 20)
+        player["health"] -= damage
+
+        print("Вы потеряли", damage, "здоровья!")
+
+    elif room == "Ключ":
+        print("Вы нашли ключ от портала!")
+
+        inventory.append({
+            "name": "Ключ",
+            "enchantment": "Магический"
+        })
+
+    elif room == "Портал":
+        print("Вы нашли портал!")
+
+        # Проверка наличия ключа
+        names = [item["name"] for item in inventory]
+
+        if "Ключ" in names:
+            print("Вы использовали ключ и открыли портал!")
+            print("ПОЗДРАВЛЯЕМ! ВЫ ПОБЕДИЛИ!")
+            return True
+
+        else:
+            print("Для открытия портала нужен ключ!")
+
+    return False
+
+
+# -----------------------------------
+# Перемещение игрока
+# -----------------------------------
+def move_player():
+
+    print("\nКуда хотите пойти?")
+    print("W - вверх")
+    print("S - вниз")
+    print("A - влево")
+    print("D - вправо")
+
+    direction = input("Ваш ход: ").lower()
+
+    x = player["x"]
+    y = player["y"]
+
+    if direction == "w":
+        x -= 1
+
+    elif direction == "s":
+        x += 1
+
+    elif direction == "a":
+        y -= 1
+
+    elif direction == "d":
+        y += 1
+
+    else:
+        print("Неверное направление!")
+        return False
+
+    # Проверка границ матрицы
+    if 0 <= x < n and 0 <= y < m:
+
+        player["x"] = x
+        player["y"] = y
+
+        print("Вы переместились в комнату:", (x, y))
+
+        return True
+
+    else:
+        print("Вы не можете выйти за границы подземелья!")
+        return False
+
+
+# -----------------------------------
+# Отображение карты
+# -----------------------------------
+def show_map():
+
+    print("\n--- КАРТА ПОДЗЕМЕЛЬЯ ---")
+
+    for i in range(n):
+
+        row = []
+
+        for j in range(m):
+
+            if player["x"] == i and player["y"] == j:
+                row.append(" P ")
+
+            elif (i, j) in visited:
+                row.append(" " + dungeon[i][j][0] + " ")
+
+            else:
+                row.append(" ? ")
+
+        print("".join(row))
+
+    print("P — игрок")
+    print("? — неизвестная комната")
+
+
+# -----------------------------------
+# Главная игра
+# -----------------------------------
+print("================================")
+print("       ПОДЗЕМЕЛЬЕ")
+print("================================")
+print("Ваша задача — найти ключ и открыть портал.")
+print("Будьте осторожны: в комнатах могут быть монстры!")
+
+while player["health"] > 0:
+
+    show_player()
+
+    print("\n===== ГЛАВНОЕ МЕНЮ =====")
+    print("1. Переместиться")
+    print("2. Инвентарь")
+    print("3. Посмотреть карту")
+    print("4. Информация об игроке")
+    print("0. Выход из игры")
+
+    choice = input("Выберите действие: ")
+
+    if choice == "1":
+
+        if move_player():
+            result = enter_room()
+
+            if result:
+                break
+
+    elif choice == "2":
+        inventory_menu()
+
+    elif choice == "3":
+        show_map()
+
+    elif choice == "4":
+        show_player()
+        show_inventory()
+
+    elif choice == "0":
+        print("Вы вышли из игры.")
+        break
+
+    else:
+        print("Неверная команда!")
+
+    if player["health"] <= 0:
+        print("\nВы проиграли! Здоровье закончилось.")
+
