@@ -1,1 +1,29 @@
+def calculator(a, operation, b):
+    if operation == "+":
+        return a + b
+    elif operation == "-":
+        return a - b
+    elif operation == "*":
+        return a * b
+    elif operation == "/":
+        if b != 0:
+            return a / b
+        else:
+            return "На ноль делить нельзя"
+    else:
+        return "Неизвестная операция"
 
+
+while True:
+    a = float(input("Введите первое число: "))
+    operation = input("Введите операцию (+, -, *, /): ")
+    b = float(input("Введите второе число: "))
+
+    result = calculator(a, operation, b)
+    print("Результат:", result)
+
+    again = input("Продолжить? (да/нет): ")
+
+    if again.lower() == "нет":
+        print("Калькулятор завершён.")
+        break
